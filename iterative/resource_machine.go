@@ -94,6 +94,12 @@ func machineSchema() *map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
+		"instance_permission_set": &schema.Schema{
+			Type:     schema.TypeString,
+			ForceNew: true,
+			Optional: true,
+			Default:  "",
+		},
 		"ssh_public": &schema.Schema{
 			Type:     schema.TypeString,
 			Computed: true,
