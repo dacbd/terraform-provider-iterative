@@ -39,17 +39,20 @@ func GetCML(version string) string {
 			}
 		}
 	}
-	// original fallback
+	// original fallback, some error has forced this
 	return getNPMCML("@dvcorg/cml")
 }
+
 func getGHCML(v string) string {
 	ghCML := "curl %s -o /bin/cml && chmod +x /bin/cml"
 	return fmt.Sprint(ghCML, v)
 }
+
 func getNPMCML(v string) string {
 	npmCML := "sudo npm config set user 0 && sudo npm install --global %s"
 	return fmt.Sprint(npmCML, v)
 }
+
 func getSemverCML(sv semver.Version) string {
 	directDownloadVersion, _ := semver.ParseRange(">=0.10.0")
 	if directDownloadVersion(sv) {
@@ -65,7 +68,6 @@ func getSemverCML(sv semver.Version) string {
 	}
 	// npm install
 	return getNPMCML("@dvcorg/cml@v" + sv.String())
-
 }
 
 func MachinePrefix(d *schema.ResourceData) string {
