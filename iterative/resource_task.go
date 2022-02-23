@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aohorodnyk/uid"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
@@ -26,7 +28,7 @@ func resourceTask() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				ForceNew: true,
-				Required: true,
+				Optional: true,
 			},
 			"cloud": {
 				Type:     schema.TypeString,
@@ -162,16 +164,18 @@ func resourceTaskCreate(ctx context.Context, d *schema.ResourceData, m interface
 		return diagnostic(diags, err, diag.Error)
 	}
 
+	d.SetId(task.GetIdentifier(ctx).Long())
+
 	if err := task.Create(ctx); err != nil {
 		diags = diagnostic(diags, err, diag.Error)
-		if err := task.Delete(ctx); err == nil {
-			diags = diagnostic(diags, errors.New("deleted all the remaining resources"), diag.Warning)
-		} else {
+		if err := task.Delete(ctx); err != nil {
 			diags = diagnostic(diags, err, diag.Error)
+		} else {
+			diags = diagnostic(diags, errors.New("failed to create"), diag.Error)
+			d.SetId("")
 		}
 	}
 
-	d.SetId(task.GetIdentifier(ctx).Long())
 	return
 }
 
@@ -288,9 +292,6 @@ func resourceTaskBuild(ctx context.Context, d *schema.ResourceData, m interface{
 			return nil, errors.New("output directory " + directory_out + " is not empty!")
 		}
 	}
-	if directory_out == "" {
-		directory_out = directory
-	}
 
 	t := common.Task{
 		Size: common.Size{
@@ -315,7 +316,22 @@ func resourceTaskBuild(ctx context.Context, d *schema.ResourceData, m interface{
 		Parallelism: uint16(d.Get("parallelism").(int)),
 	}
 
-	return task.New(ctx, c, common.Identifier(d.Get("name").(string)), t)
+	name := d.Id()
+	if name == "" {
+		if identifier := d.Get("name").(string); identifier != "" {
+			name = identifier
+		} else if identifier := os.Getenv("GITHUB_RUN_ID"); identifier != "" {
+			name = identifier
+		} else if identifier := os.Getenv("CI_PIPELINE_ID"); identifier != "" {
+			name = identifier
+		} else if identifier := os.Getenv("BITBUCKET_STEP_TRIGGERER_UUID"); identifier != "" {
+			name = identifier
+		} else {
+			name = uid.NewProvider36Size(8).MustGenerate().String()
+		}
+	}
+
+	return task.New(ctx, c, common.Identifier(name), t)
 }
 
 func diagnostic(diags diag.Diagnostics, err error, severity diag.Severity) diag.Diagnostics {

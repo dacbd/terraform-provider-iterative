@@ -11,8 +11,8 @@ if [ ! -f "$FILE" ]; then
   sudo add-apt-repository ppa:git-core/ppa -y
   sudo apt update && sudo apt-get install -y software-properties-common build-essential git
 
-  sudo curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh &&
-    sudo usermod -aG docker ubuntu
+  sudo curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh
+  sudo usermod -aG docker ubuntu
   sudo setfacl --modify user:ubuntu:rw /var/run/docker.sock
 
   curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
@@ -24,6 +24,9 @@ if [ ! -f "$FILE" ]; then
 
   sudo apt install -y ubuntu-drivers-common
   sudo ubuntu-drivers autoinstall
+
+  sudo curl https://amazon-ecr-credential-helper-releases.s3.us-east-2.amazonaws.com/0.5.0/linux-amd64/docker-credential-ecr-login --output /usr/bin/docker-credential-ecr-login
+  sudo chmod 755 /usr/bin/docker-credential-ecr-login
 
   curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
   curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu18.04/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list

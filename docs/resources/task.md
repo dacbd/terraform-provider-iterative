@@ -11,7 +11,6 @@ This resource will:
 
 ```hcl
 resource "iterative_task" "task" {
-  name  = "example"
   cloud = "aws"
 
   environment = { GREETING = "Hello, world!" }
@@ -30,12 +29,12 @@ resource "iterative_task" "task" {
 
 ### Required
 
-- `name` - (Required) Task name.
 - `cloud` - (Required) Cloud provider to run the task on; valid values are `aws`, `gcp`, `az` and `k8s`.
 - `script` - (Required) Script to run; must begin with a valid [shebang](<https://en.wikipedia.org/wiki/Shebang_(Unix)>).
 
 ### Optional
 
+- `name` - (Optional) Deterministic task name.
 - `region` - (Optional) [Cloud region/zone](#cloud-regions) to run the task on.
 - `machine` - (Optional) See [Machine Types](#machine-types) below.
 - `disk_size` - (Optional) Size of the ephemeral machine storage.
@@ -43,7 +42,7 @@ resource "iterative_task" "task" {
 - `image` - (Optional) [Machine image](#machine-images) to run the task with.
 - `parallelism` - (Optional) Number of machines to be launched in parallel.
 - `workdir.input` - (Optional) Local working directory to upload.
-- `workdir.output` - (Optional) Local directory to download results to (default: `workdir.input`).
+- `workdir.output` - (Optional) Local directory to download results to (default: no download).
 - `environment` - (Optional) Map of environment variable names and values for the task script. Empty string values are replaced with local environment values. Empty values may also be combined with a [glob](<https://en.wikipedia.org/wiki/Glob_(programming)>) name to import all matching variables.
 - `timeout` - (Optional) Maximum number of seconds to run before termination.
 

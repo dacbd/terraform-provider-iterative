@@ -305,6 +305,8 @@ func renderScript(data map[string]interface{}) (string, error) {
 
 	tmpl, err := template.New("deploy").Funcs(template.FuncMap{"escape": shellescape.Quote}).Parse(
 		`#!/bin/sh
+sudo systemctl is-enabled cml.service && return 0
+
 {{- if not .container}}
 {{- if .setup}}{{.setup}}{{- end}}
 {{.setupCML}}
@@ -368,7 +370,11 @@ EOF'
 
 {{- if .cloud}}
 sudo systemctl daemon-reload
-sudo systemctl enable cml.service --now
+sudo systemctl enable cml.service
+{{- if .instance_gpu}}
+nvidia-smi &>/dev/null || reboot
+{{- end}}
+sudo systemctl start cml.service
 {{- end}}
 
 {{- end}}
@@ -424,7 +430,7 @@ func provisionerCode(d *schema.ResourceData) (string, error) {
 		return code, err
 	}
 
-	setup, err := Asset("../cml/setup.sh")
+	setup, err := Asset("../environment/setup.sh")
 	if err != nil {
 		return code, err
 	}
