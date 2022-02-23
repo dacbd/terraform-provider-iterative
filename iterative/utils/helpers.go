@@ -25,7 +25,7 @@ func GetCML(version string) string {
 			}
 		} else {
 			// GitHub API failed
-			return getNPMCML("@dvcorg/cml; echo 1")
+			return getNPMCML("@dvcorg/cml")
 		}
 	}
 	// handle "v"semver
@@ -42,10 +42,10 @@ func GetCML(version string) string {
 	}
 	// user must know best, npm install <string>
 	if version != "" {
-		return getNPMCML(version + "; echo 3")
+		return getNPMCML(version)
 	}
 	// original fallback, some error has forced this
-	return getNPMCML("@dvcorg/cml; echo 2")
+	return getNPMCML("@dvcorg/cml")
 }
 
 func getGHCML(v string) string {
@@ -72,7 +72,7 @@ func getSemverCML(sv semver.Version) string {
 		}
 	}
 	// npm install
-	return getNPMCML("@dvcorg/cml@v" + sv.String() + "; echo 4")
+	return getNPMCML("@dvcorg/cml@v" + sv.String())
 }
 
 func MachinePrefix(d *schema.ResourceData) string {
