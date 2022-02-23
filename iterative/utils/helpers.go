@@ -18,14 +18,13 @@ func GetCML(version string) string {
 		client := github.NewClient(nil)
 		release, _, err := client.Repositories.GetLatestRelease(context.Background(), "iterative", "cml")
 		if err != nil {
-			for _, asset := range release.Assets {
-				if *asset.Name == "cml-linux" {
-					return getGHCML(*asset.BrowserDownloadURL)
-				}
-			}
-		} else {
 			// GitHub API failed
 			return getNPMCML("@dvcorg/cml")
+		}
+		for _, asset := range release.Assets {
+			if *asset.Name == "cml-linux" {
+				return getGHCML(*asset.BrowserDownloadURL)
+			}
 		}
 	}
 	// handle "v"semver
@@ -50,7 +49,7 @@ func GetCML(version string) string {
 
 func getGHCML(v string) string {
 	ghCML := "curl %s -o /bin/cml && chmod +x /bin/cml"
-	return fmt.Sprint(ghCML, v)
+	return fmt.Sprintf(ghCML, v)
 }
 
 func getNPMCML(v string) string {
