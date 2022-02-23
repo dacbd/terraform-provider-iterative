@@ -309,7 +309,7 @@ sudo systemctl is-enabled cml.service && return 0
 
 {{- if not .container}}
 {{- if .setup}}{{.setup}}{{- end}}
-{{.setupCML}}
+{{.setupCML}} >> /tmp/error.log
 {{- end}}
 
 {{- if not .container}}
