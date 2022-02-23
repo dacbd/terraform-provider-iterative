@@ -48,7 +48,7 @@ func GetCML(version string) string {
 }
 
 func getGHCML(v string) string {
-	ghCML := "sudo curl %s -o /bin/cml && sudo chmod +x /bin/cml"
+	ghCML := "sudo curl -L %s -o /bin/cml && sudo chmod +x /bin/cml"
 	return fmt.Sprintf(ghCML, v)
 }
 
