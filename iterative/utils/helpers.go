@@ -50,7 +50,7 @@ func getGHCML(v string) string {
 
 func getNPMCML(v string) string {
 	npmCML := "sudo npm config set user 0 && sudo npm install --global %s"
-	return fmt.Sprint(npmCML, v)
+	return fmt.Sprintf(npmCML, v)
 }
 
 func getSemverCML(sv semver.Version) string {
