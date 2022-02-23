@@ -13,31 +13,36 @@ import (
 )
 
 func GetCML(version string) string {
-	// "v"semver
+	// default latest if unset
+	if version == "" {
+		client := github.NewClient(nil)
+		release, _, err := client.Repositories.GetLatestRelease(context.Background(), "iterative", "cml")
+		if err != nil {
+			for _, asset := range release.Assets {
+				if *asset.Name == "cml-linux" {
+					return getGHCML(*asset.BrowserDownloadURL)
+				}
+			}
+		} else {
+			// GitHub API failed
+			return getNPMCML("@dvcorg/cml")
+		}
+	}
+	// handle "v"semver
 	if strings.HasPrefix(version, "v") {
 		ver, err := semver.Make(version[1:])
 		if err != nil {
 			return getSemverCML(ver)
 		}
 	}
-	// semver
+	// handle semver
 	ver, err := semver.Make(version)
 	if err != nil {
 		return getSemverCML(ver)
 	}
-	// npm install string
+	// user must know best, npm install <string>
 	if version != "" {
 		return getNPMCML(version)
-	}
-	//default latest
-	client := github.NewClient(nil)
-	release, _, err := client.Repositories.GetLatestRelease(context.Background(), "iterative", "cml")
-	if err != nil {
-		for _, asset := range release.Assets {
-			if *asset.Name == "cml-linux" {
-				return getGHCML(*asset.BrowserDownloadURL)
-			}
-		}
 	}
 	// original fallback, some error has forced this
 	return getNPMCML("@dvcorg/cml")
