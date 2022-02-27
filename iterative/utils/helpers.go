@@ -49,7 +49,7 @@ func GetCML(version string) string {
 
 func getGHCML(v string) string {
 	return fmt.Sprintf(`sudo mkdir -p /opt/cml/
-sudo curl --location --url %s
+sudo curl --location --url %s --output /opt/cml/cml-linux
 sudo chmod +x /opt/cml/cml-linux
 sudo ln -s /opt/cml/cml-linux /usr/bin/cml
 alias cml-runner='cml runner'`, v)
