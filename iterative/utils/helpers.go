@@ -52,7 +52,7 @@ func getGHCML(v string) string {
 sudo curl --location --url %s --output /opt/cml/cml-linux
 sudo chmod +x /opt/cml/cml-linux
 sudo ln -s /opt/cml/cml-linux /usr/bin/cml
-alias cml-runner='cml runner'`, v)
+sudo echo "alias cml-runner='cml runner'" >> /etc/profile`, v)
 }
 
 func getNPMCML(v string) string {
