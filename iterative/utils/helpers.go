@@ -30,13 +30,13 @@ func GetCML(version string) string {
 	// handle "v"semver
 	if strings.HasPrefix(version, "v") {
 		ver, err := semver.Make(version[1:])
-		if err != nil {
+		if err == nil {
 			return getSemverCML(ver)
 		}
 	}
 	// handle semver
 	ver, err := semver.Make(version)
-	if err != nil {
+	if err == nil {
 		return getSemverCML(ver)
 	}
 	// user must know best, npm install <string>
@@ -65,7 +65,7 @@ func getSemverCML(sv semver.Version) string {
 	if directDownloadVersion(sv) {
 		client := github.NewClient(nil)
 		release, _, err := client.Repositories.GetReleaseByTag(context.Background(), "iterative", "cml", "v"+sv.String())
-		if err != nil {
+		if err == nil {
 			for _, asset := range release.Assets {
 				if *asset.Name == "cml-linux" {
 					return getGHCML(*asset.BrowserDownloadURL)
