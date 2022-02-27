@@ -51,8 +51,7 @@ func getGHCML(v string) string {
 	return fmt.Sprintf(`sudo mkdir -p /opt/cml/
 sudo curl --location --url %s --output /opt/cml/cml-linux
 sudo chmod +x /opt/cml/cml-linux
-sudo ln -s /opt/cml/cml-linux /usr/bin/cml
-sudo echo "alias cml-runner='cml runner'" >> /etc/profile`, v)
+sudo ln -s /opt/cml/cml-linux /usr/bin/cml`, v)
 }
 
 func getNPMCML(v string) string {
